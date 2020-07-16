@@ -1,6 +1,8 @@
 package engine;
 
 import java.awt.Graphics2D;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +13,7 @@ import java.util.TimerTask;
  * The thing that combines everything together
  * To make things run continuously, we will extend TimerTask here
  */
-public class LGEngine extends TimerTask {
+public class LGEngine extends TimerTask implements KeyListener {
     private final List<LGNode> nodeList;
     private final LGFrame frame;
     private final LGPanel panel;
@@ -35,6 +37,7 @@ public class LGEngine extends TimerTask {
     public void start(final long period) {
         frame.constructFrame();
         frame.register(panel);
+        frame.getFrame().addKeyListener(this);
         new Timer().schedule(this, 0, period);
     }
 
@@ -49,5 +52,20 @@ public class LGEngine extends TimerTask {
         nodeList.forEach(item -> item.render(g2d));
         // Next, we update the window
         panel.repaint();
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        nodeList.forEach(item->item.keyPressed(e));
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+
     }
 }

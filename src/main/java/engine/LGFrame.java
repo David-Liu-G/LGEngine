@@ -24,6 +24,10 @@ public class LGFrame {
         this.frame = new JFrame();
     }
 
+    public JFrame getFrame() {
+        return frame;
+    }
+
     public void constructFrame() {
         // Set the size of the frame
         frame.getContentPane().setPreferredSize(new Dimension(width, height));
