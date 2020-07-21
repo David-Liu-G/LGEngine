@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class Board implements LGNode {
+public class SnakeGame implements LGNode {
     // So the size of the panel should be 15 * 20 = 300
     private static final int ROW = 15;
     private static final int COL = 15;
@@ -22,9 +22,10 @@ public class Board implements LGNode {
      */
     private Map<Point, Box> boxMap;
     private Snake snake;
+    private Food food;
     private SlowTimer slowTimer;
 
-    public Board() {
+    public SnakeGame() {
         this.boxMap = IntStream.range(0, ROW)
                 .boxed()
                 .map(row -> IntStream.range(0, COL)
@@ -34,14 +35,20 @@ public class Board implements LGNode {
                 .flatMap(Collection::stream)
                 .collect(Collectors.toMap(p -> p, p -> new Box(p.x * SIZE, p.y * SIZE, SIZE)));
         this.snake = new Snake();
+        this.food = new Food(this.boxMap.keySet(), this.snake.getBody());
         // We can decrease the threshold to make the snake move faster
-        this.slowTimer = new SlowTimer(5, () -> snake.move());
+        this.slowTimer = new SlowTimer(5, () -> {
+            if (snake.move(this.food)) {
+                this.food.generateFood(this.boxMap.keySet(), this.snake.getBody());
+            }
+        });
     }
 
     @Override
     public void render(Graphics2D g2d) {
         boxMap.values().forEach(box -> box.setState(Box.State.Empty));
         slowTimer.render(g2d);
+        boxMap.get(food.getLocation()).setState(Box.State.Food);
         snake.getBody().forEach(p -> boxMap.get(p).setState(Box.State.Filled));
         boxMap.values().forEach(box -> box.render(g2d));
     }

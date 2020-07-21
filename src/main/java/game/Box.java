@@ -26,6 +26,7 @@ public class Box implements LGNode {
     /**
      * If state is Filled, we use green to indicate that this box is taken
      * if state if empty, we use black as the default color
+     *
      * @param g2d The painter
      */
     @Override
@@ -37,6 +38,9 @@ public class Box implements LGNode {
             case Empty:
                 g2d.setColor(Color.black);
                 break;
+            case Food:
+                g2d.setColor(Color.red);
+                break;
         }
         g2d.fill(area);
         g2d.setColor(Color.gray);
@@ -44,6 +48,6 @@ public class Box implements LGNode {
     }
 
     enum State {
-        Filled, Empty
+        Filled, Empty, Food
     }
 }

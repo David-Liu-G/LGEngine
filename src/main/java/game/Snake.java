@@ -19,10 +19,22 @@ public class Snake {
         body.addFirst(new Point(2, 0));
     }
 
-    public void move() {
+    /**
+     * @param food The food on the board
+     * @return true if snake gets food, false otherwise
+     */
+    public boolean move(final Food food) {
         final Point nextPoint = getNextPoint();
+        if (body.contains(nextPoint)) {
+            throw new RuntimeException("Game end!");
+        }
         body.addFirst(nextPoint);
-        body.removeLast();
+        // If snake gets food, we don't need to remove last
+        if (!nextPoint.equals(food.getLocation())) {
+            body.removeLast();
+            return false;
+        }
+        return true;
     }
 
     public List<Point> getBody() {
@@ -30,6 +42,16 @@ public class Snake {
     }
 
     public void setDirection(Direction direction) {
+        if (direction == Direction.up || direction == Direction.down) {
+            if (this.direction == Direction.up || this.direction == Direction.down) {
+                return;
+            }
+        }
+        if (direction == Direction.left || direction == Direction.right) {
+            if (this.direction == Direction.left || this.direction == Direction.right) {
+                return;
+            }
+        }
         this.direction = direction;
     }
 
