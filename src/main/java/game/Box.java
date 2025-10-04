@@ -1,53 +1,54 @@
 package game;
 
 import engine.LGNode;
+import physics.RigidBody;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 
 /**
- * Our snake game will basically be a board with a bunch of boxes
- * We control how each box behaves
+ * A physics-enabled box that uses the physics engine for movement and collision
  */
 public class Box implements LGNode {
-    private final Rectangle area;
-    private State state;
+    private final RigidBody physicsBody;
+    private final Rectangle2D.Double area;
 
     public Box(final int x, final int y, final int size) {
-        this.area = new Rectangle(x, y, size, size);
-        this.state = State.Empty;
+        this.physicsBody = new RigidBody(x, y, size, size, 1.0); // Mass of 1.0
+        this.area = new Rectangle2D.Double();
+        
+        // Set physics properties
+        physicsBody.setRestitution(0.8); // Bouncy
+        physicsBody.setFriction(0.1); // Low friction
     }
-
-    public void setState(final State state) {
-        this.state = state;
+    
+    /**
+     * Get the physics body for external physics world management
+     */
+    public RigidBody getPhysicsBody() {
+        return physicsBody;
+    }
+    
+    /**
+     * Update the visual area based on physics body position
+     */
+    private void updateArea() {
+        area.setRect(physicsBody.getX(), physicsBody.getY(), 
+                    physicsBody.getWidth(), physicsBody.getHeight());
     }
 
     /**
-     * If state is Filled, we use green to indicate that this box is taken
-     * if state if empty, we use black as the default color
+     * Render the box using the physics body's position
      *
      * @param g2d The painter
      */
     @Override
     public void render(Graphics2D g2d) {
-        switch (state) {
-            case Filled:
-                g2d.setColor(Color.green);
-                break;
-            case Empty:
-                g2d.setColor(Color.black);
-                break;
-            case Food:
-                g2d.setColor(Color.red);
-                break;
-        }
+        updateArea();
+        g2d.setColor(Color.RED);
         g2d.fill(area);
         g2d.setColor(Color.gray);
         g2d.draw(area);
-    }
-
-    enum State {
-        Filled, Empty, Food
     }
 }
